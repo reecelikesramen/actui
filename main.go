@@ -991,7 +991,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 							}
 						}
 
-						// Close previous step if it was running
+						// Close previous step if it was running (Assumption: success unless we saw failure)
 						if len(jd.Steps) > 0 {
 							last := jd.Steps[len(jd.Steps)-1]
 							if last.Status == StatusRunning {
@@ -1020,13 +1020,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 							Logs:   []string{"Step skipped by act (likely due to 'if' condition)"},
 						}
 						jd.Steps = append(jd.Steps, step)
-					} else if strings.Contains(cleanText, "Success -") {
+					} else if strings.Contains(cleanText, "Success -") || strings.Contains(cleanText, "\u2705") {
 						if len(jd.Steps) > 0 {
 							last := jd.Steps[len(jd.Steps)-1]
 							last.Status = StatusSuccess
 							last.IsOpen = false
 						}
-					} else if strings.Contains(cleanText, "Failure -") {
+					} else if strings.Contains(cleanText, "Failure -") || strings.Contains(cleanText, "\u274c") || strings.Contains(cleanText, "\u274e") || strings.Contains(cleanText, "\u2716") {
 						if len(jd.Steps) > 0 {
 							last := jd.Steps[len(jd.Steps)-1]
 							last.Status = StatusFailure
@@ -1036,6 +1036,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						jd.Status = JobSuccess
 					} else if strings.Contains(cleanText, "Job failed") {
 						jd.Status = JobFailure
+						// If the job failed, the current step must have failed
+						if len(jd.Steps) > 0 {
+							last := jd.Steps[len(jd.Steps)-1]
+							if last.Status == StatusRunning {
+								last.Status = StatusFailure
+								last.IsOpen = true
+							}
+						}
 					} else {
 						// Raw log buffer for copying
 						m.logBuffers[jobID] += content + "\n"

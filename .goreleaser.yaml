@@ -56,13 +56,13 @@ brews:
       bin.install "actui"
 
 # Scoop for Windows
-scoops:
-  - name: actui
-    repository:
-      owner: reecelikesramen
-      name: scoop-bucket
-    homepage: "https://github.com/reecelikesramen/actui"
-    description: "actui is a TUI for managing act workflows"
+# scoops:
+#   - name: actui
+#     repository:
+#       owner: reecelikesramen
+#       name: scoop-bucket
+#     homepage: "https://github.com/reecelikesramen/actui"
+#     description: "actui is a TUI for managing act workflows"
 
 # Linux Packages (.deb, .rpm, .apk)
 nfpms:
