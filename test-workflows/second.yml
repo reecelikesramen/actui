@@ -1,0 +1,7 @@
+name: Second Workflow
+on: pull_request
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Linting...'

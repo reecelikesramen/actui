@@ -1,0 +1,45 @@
+name: Parallel Load Test
+on: workflow_dispatch
+jobs:
+  heavy-log-job-1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1 - Fast Logs
+        run: |
+          for i in {1..100}; do
+            echo "Job 1 - Step 1 - Log line $i - $(date)"
+          done
+      - name: Step 2 - Slow Logs
+        run: |
+          for i in {1..10}; do
+            echo "Job 1 - Step 2 - Slow log $i"
+            sleep 1
+          done
+
+  heavy-log-job-2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1 - Mixed Logs
+        run: |
+          echo "Starting Job 2..."
+          for i in {1..50}; do
+            echo "Job 2 - Log $i"
+            if (( i % 10 == 0 )); then
+              echo "Job 2 - checkpoint $i"
+              sleep 0.5
+            fi
+          done
+
+  heavy-log-job-3:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Long Running Process
+        run: |
+          echo "Compiling... (simulated)"
+          for i in {1..20}; do
+            echo "[INFO] Compiling module $i/20..."
+            sleep 0.2
+            echo "[DEBUG] Details for module $i..."
+            echo "[DEBUG] More details..."
+          done
+          echo "Done."
